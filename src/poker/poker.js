@@ -1,4 +1,5 @@
 var events = require('events');
+var _ = require('lodash');
 
 function Table(smallBlind, bigBlind, minPlayers, maxPlayers, minBuyIn, maxBuyIn) {
     this.smallBlind = smallBlind;
@@ -6,7 +7,6 @@ function Table(smallBlind, bigBlind, minPlayers, maxPlayers, minBuyIn, maxBuyIn)
     this.minPlayers = minPlayers;
     this.maxPlayers = maxPlayers;
     this.players = [];
-    console.log(`this.players: ${this.players.length}`);
     this.dealer = 0; //Track the dealer position between games
     this.minBuyIn = minBuyIn;
     this.maxBuyIn = maxBuyIn;
@@ -123,16 +123,28 @@ function checkForEndOfRound(table) {
     endOfRound = true;
     maxBet = getMaxBet(table.game.bets);
     //For each player, check
+    // console.log(`roundName: ${table.game.roundName}`);
+    // console.log(`table.currentPlayer B4: ${table.currentPlayer}`);
     for (i = 0; i < table.players.length; i += 1) {
+        // console.log(`checkForEndOfRound i: ${i}: 
+        // Name:${table.players[i].playerName}, 
+        // folded:${table.players[i].folded}, 
+        // talked:${table.players[i].talked}, 
+        // bet:${table.game.bets[i]}, 
+        // allIn: ${table.players[i].allIn}
+        // maxBet: ${maxBet}
+        // dealer: ${table.dealer}`);
         if (table.players[i].folded === false) {
             if (table.players[i].talked === false || table.game.bets[i] !== maxBet) {
                 if (table.players[i].allIn === false) {
                     table.currentPlayer = i;
                     endOfRound = false;
+                    break;
                 }
             }
         }
     }
+    // console.log(`table.currentPlayer Af: ${table.currentPlayer}`);
     return endOfRound;
 }
 
@@ -683,7 +695,9 @@ function progress(table) {
     var i, j, cards, hand;
     if (table.game) {
         if (checkForEndOfRound(table) === true) {
+            // console.log(`progress: table.currentPlayer B4: ${table.currentPlayer}`);
             table.currentPlayer = (table.currentPlayer >= table.players.length - 1) ? (table.currentPlayer - table.players.length + 1) : (table.currentPlayer + 1);
+            // console.log(`progress: table.currentPlayer Af: ${table.currentPlayer}`);
             //Move all bets to the pot
             for (i = 0; i < table.game.bets.length; i += 1) {
                 table.game.pot += parseInt(table.game.bets[i], 10);
@@ -896,9 +910,9 @@ Table.prototype.AddPlayer = function (playerName, chips) {
     else {
         return false;
     }
-    if (this.players.length === 0 && this.playersToAdd.length >= this.minPlayers) {
-        this.StartGame();
-    }
+    // if (this.players.length === 0 && this.playersToAdd.length >= this.minPlayers) {
+    //     this.StartGame();
+    // }
     return true
 };
 Table.prototype.RemovePlayer = function (playerName) {
@@ -945,10 +959,14 @@ Table.prototype.NewRound = function () {
     if (smallBlind >= this.players.length) {
         smallBlind = 0;
     }
+    console.log(`smallBlind: ${smallBlind}`);
+
     bigBlind = this.dealer + 2;
     if (bigBlind >= this.players.length) {
         bigBlind -= this.players.length;
     }
+    console.log(`bigBlind: ${bigBlind}`)
+
     //Force Blind Bets
     this.players[smallBlind].chips -= this.smallBlind;
     this.players[bigBlind].chips -= this.bigBlind;

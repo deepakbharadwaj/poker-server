@@ -9,7 +9,7 @@ export class PokerService {
 
     createTable(smallBlind: Number, bigBlind: Number, minPlayers: Number, maxPlayers: Number,
         minBuyIn: Number, maxBuyIn: Number, playerName: string, chips: Number) {
-        var table: Table = new Table.Table(
+        var table: any = new Table.Table(
             smallBlind,
             bigBlind,
             minPlayers,
@@ -39,11 +39,15 @@ export class PokerService {
 
     getPlayers(tableId: string): any {
         const table = this.getTable(tableId);
+        const allPlayers = _.flatten(_.concat(
+            _.map(table.handle.players, p => p.playerName),
+            _.map(table.handle.playersToAdd, p => p.playerName),
+            _.map(table.handle.playersToRemove, p => p.playerName)));
+
         if (!_.isNil(table)) {
             return {
-                'players': _.map(table.handle.players, p => p.playerName),
-                'playersToAdd': _.map(table.handle.playersToAdd, p => p.playerName),
-                'playersToRemove': _.map(table.handle.playersToRemove, p => p.playerName),
+                'players': allPlayers,
+                'enoughPlayersToStart': (allPlayers.length >= table.handle.minPlayers) && (allPlayers.length <= table.handle.maxPlayers)
             };
         }
         return null;
@@ -80,7 +84,11 @@ export class PokerService {
     getDeal(tableId: string): any[] {
         const table = this.getTable(tableId);
         if (!_.isNil(table)) {
-            return table.handle.getDeal()
+            const deal = table.handle.getDeal();
+            if (!_.isNil(deal)) {
+                return deal;
+            }
+            return [];
         }
         return null;
     }
@@ -174,7 +182,7 @@ export class PokerService {
     fold(tableId: string, playerName: string): boolean {
         const table = this.getTable(tableId);
         if (!_.isNil(table)) {
-            return table.handle.check(playerName);
+            return table.handle.fold(playerName);
         }
         return false;
     }
@@ -182,7 +190,7 @@ export class PokerService {
     call(tableId: string, playerName: string): boolean {
         const table = this.getTable(tableId);
         if (!_.isNil(table)) {
-            return table.handle.check(playerName);
+            return table.handle.call(playerName);
         }
         return false;
     }
@@ -190,7 +198,7 @@ export class PokerService {
     bet(tableId: string, playerName: string, amount: number): boolean {
         const table = this.getTable(tableId);
         if (!_.isNil(table)) {
-            return table.handle.check(playerName, amount);
+            return table.handle.bet(playerName, amount);
         }
         return false;
     }
@@ -198,7 +206,7 @@ export class PokerService {
     getWinners(tableId: string): any[] {
         const table = this.getTable(tableId);
         if (!_.isNil(table)) {
-            table.handle.getWinners();
+            return table.handle.getWinners();
         }
         return null
     }
@@ -206,7 +214,7 @@ export class PokerService {
     getLosers(tableId: string): any[] {
         const table = this.getTable(tableId);
         if (!_.isNil(table)) {
-            table.handle.getWinners();
+            return table.handle.getLosers();
         }
         return null
     }

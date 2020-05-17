@@ -12,8 +12,8 @@ export class PokerController {
     }
 
     @Post('table')
-    async createTable(@Body() createTableDto: CreateTableDto): Promise<string> {
-        return this.pokerService.createTable(
+    async createTable(@Body() createTableDto: CreateTableDto): Promise<any> {
+        const tableId = this.pokerService.createTable(
             +createTableDto.smallBlind,
             +createTableDto.bigBlind,
             +createTableDto.minPlayers,
@@ -23,34 +23,36 @@ export class PokerController {
             createTableDto.playerName,
             +createTableDto.chips
         );
+        Logger.log(`createTable result: ${tableId}`);
+        return { id: tableId };
     }
 
     @Get(':tableId/players')
     async listPlayers(@Param('tableId') tableId: string): Promise<any> {
         const players = this.pokerService.getPlayers(tableId);
-        Logger.log(`players result: ${players}`);
+        Logger.log(`listPlayers result: ${JSON.stringify(players)}`);
         return players;
     }
 
     @Post(':tableId/addPlayer')
     async addPlayer(@Param('tableId') tableId: string, @Body() addPlayerDto: AddPlayerDto): Promise<string[]> {
         const result = this.pokerService.addPlayer(tableId, addPlayerDto.name, +addPlayerDto.chips);
-        Logger.log(`addPlayer result: ${result}`);
+        Logger.log(`addPlayer result: ${JSON.stringify(result)}`);
         return this.pokerService.getPlayers(tableId);
     }
 
     @Delete(':tableId/addPlayer/:playerName')
     async deletePlayer(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<string[]> {
         const result = this.pokerService.removePlayer(tableId, playerName);
-        Logger.log(`addPlayer result: ${result}`);
+        Logger.log(`deletePlayer result: ${JSON.stringify(result)}`);
         return this.pokerService.getPlayers(tableId);
     }
 
     @Put(':tableId/player/:playerName/start')
     async startGame(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<any> {
         const result = this.pokerService.startGame(tableId, playerName);
-        Logger.log(`startGame result: ${result}`);
-        return result;
+        Logger.log(`startGame result: ${JSON.stringify(result)}`);
+        return { result };
     }
 
     @Put(':tableId/player/:playerName/round')
@@ -63,29 +65,29 @@ export class PokerController {
     @Get(':tableId/player/:playerName/hand')
     async gethand(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<any> {
         const result = this.pokerService.getHandForPlayerName(tableId, playerName);
-        Logger.log(`getHand result: ${result}`);
-        return result;
+        Logger.log(`getHand result: ${JSON.stringify(result)}`);
+        return { result };
     }
 
     @Get(':tableId/deal')
     async getDeal(@Param('tableId') tableId: string): Promise<any> {
         const result = this.pokerService.getDeal(tableId);
         Logger.log(`getDeal result: ${result}`);
-        return result;
+        return { result };
     }
 
     @Get(':tableId/currentPlayer')
     async getCurrentPlayer(@Param('tableId') tableId: string): Promise<any> {
         const result = this.pokerService.getCurrentPlayer(tableId);
         Logger.log(`getCurrentPlayer result: ${result}`);
-        return result;
+        return { result };
     }
 
     @Get(':tableId/roundName')
     async getRoundName(@Param('tableId') tableId: string): Promise<any> {
         const result = this.pokerService.getRoundName(tableId);
         Logger.log(`getRoundName result: ${result}`);
-        return result;
+        return { result };
     }
 
     @Get(':tableId/pot')
@@ -120,28 +122,28 @@ export class PokerController {
     async check(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<any> {
         const result = this.pokerService.check(tableId, playerName);
         Logger.log(`check result: ${result}`);
-        return result;
+        return { result };
     }
 
     @Put(':tableId/player/:playerName/fold')
     async fold(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<any> {
         const result = this.pokerService.fold(tableId, playerName);
         Logger.log(`fold result: ${result}`);
-        return result;
+        return { result };
     }
 
     @Put(':tableId/player/:playerName/call')
     async call(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<any> {
         const result = this.pokerService.call(tableId, playerName);
         Logger.log(`call result: ${result}`);
-        return result;
+        return { result };
     }
 
     @Put(':tableId/player/:playerName/call')
     async bet(@Param('tableId') tableId: string, @Param('playerName') playerName: string, @Body() betDto: BetDto): Promise<any> {
         const result = this.pokerService.bet(tableId, playerName, +betDto.amount);
         Logger.log(`bet result: ${result}`);
-        return result;
+        return { result };
     }
 
     @Get(':tableId/result')
@@ -151,8 +153,10 @@ export class PokerController {
         const losers = this.pokerService.getLosers(tableId);
         Logger.log(`getWinners result: ${losers}`);
         return {
-            winners,
-            losers
+            result: {
+                winners,
+                losers
+            }
         };
     }
 
