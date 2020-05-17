@@ -860,7 +860,8 @@ Table.prototype.getLosers = function () {
     return this.gameLosers;
 };
 Table.prototype.getAllHands = function () {
-    var all = this.losers.concat(this.players);
+    // var all = _.flattenDeep(_.concat(this.losers, this.players));
+    var all = this.players;
     var allHands = [];
     for (var i in all) {
         allHands.push({

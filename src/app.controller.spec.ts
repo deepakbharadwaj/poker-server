@@ -392,11 +392,17 @@ describe('E2E Test', () => {
 
       // -------------- Result ----------------- //
 
-      // Get Next Player => P3
+      // Winners?
       response = await request(httpServer)
         .get(`/poker/${tableId}/result`)
         .set('Accept', 'application/json');
-      Logger.log(`currentPlayer: ${JSON.stringify(response.body.result)}`);
+      Logger.log(`Winners: ${JSON.stringify(response.body.result)}`);
+
+      // All hands
+      response = await request(httpServer)
+        .get(`/poker/${tableId}/allHands`)
+        .set('Accept', 'application/json');
+      Logger.log(`All hands: ${JSON.stringify(response.body.result)}`);
     });
   });
 

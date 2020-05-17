@@ -59,7 +59,7 @@ export class PokerController {
     async newRound(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<any> {
         const result = this.pokerService.newRound(tableId, playerName);
         Logger.log(`newRound result: ${result}`);
-        return result;
+        return { result };
     }
 
     @Get(':tableId/player/:playerName/hand')
@@ -114,8 +114,8 @@ export class PokerController {
     @Get(':tableId/allHands')
     async getAllHands(@Param('tableId') tableId: string): Promise<any> {
         const result = this.pokerService.getAllHands(tableId);
-        Logger.log(`getAllHands result: ${result}`);
-        return result;
+        Logger.log(`getAllHands result: ${JSON.stringify(result)}`);
+        return { result };
     }
 
     @Put(':tableId/player/:playerName/check')
