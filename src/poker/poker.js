@@ -122,29 +122,19 @@ function checkForEndOfRound(table) {
     var maxBet, i, endOfRound;
     endOfRound = true;
     maxBet = getMaxBet(table.game.bets);
-    //For each player, check
-    // console.log(`roundName: ${table.game.roundName}`);
-    // console.log(`table.currentPlayer B4: ${table.currentPlayer}`);
     for (i = 0; i < table.players.length; i += 1) {
-        // console.log(`checkForEndOfRound i: ${i}: 
-        // Name:${table.players[i].playerName}, 
-        // folded:${table.players[i].folded}, 
-        // talked:${table.players[i].talked}, 
-        // bet:${table.game.bets[i]}, 
-        // allIn: ${table.players[i].allIn}
-        // maxBet: ${maxBet}
-        // dealer: ${table.dealer}`);
         if (table.players[i].folded === false) {
             if (table.players[i].talked === false || table.game.bets[i] !== maxBet) {
                 if (table.players[i].allIn === false) {
                     table.currentPlayer = i;
                     endOfRound = false;
+
+                    // ISSUE: Check if this fix is correct after fix
                     break;
                 }
             }
         }
     }
-    // console.log(`table.currentPlayer Af: ${table.currentPlayer}`);
     return endOfRound;
 }
 
@@ -695,9 +685,7 @@ function progress(table) {
     var i, j, cards, hand;
     if (table.game) {
         if (checkForEndOfRound(table) === true) {
-            // console.log(`progress: table.currentPlayer B4: ${table.currentPlayer}`);
             table.currentPlayer = (table.currentPlayer >= table.players.length - 1) ? (table.currentPlayer - table.players.length + 1) : (table.currentPlayer + 1);
-            // console.log(`progress: table.currentPlayer Af: ${table.currentPlayer}`);
             //Move all bets to the pot
             for (i = 0; i < table.game.bets.length; i += 1) {
                 table.game.pot += parseInt(table.game.bets[i], 10);
