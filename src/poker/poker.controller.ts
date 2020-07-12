@@ -41,10 +41,10 @@ export class PokerController {
         return this.pokerService.getPlayers(tableId);
     }
 
-    @Delete(':tableId/addPlayer/:playerName')
-    async deletePlayer(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<string[]> {
+    @Delete(':tableId/removePlayer/:playerName')
+    async removePlayer(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<string[]> {
         const result = this.pokerService.removePlayer(tableId, playerName);
-        Logger.log(`deletePlayer result: ${JSON.stringify(result)}`);
+        Logger.log(`removePlayer result: ${JSON.stringify(result)}`);
         return this.pokerService.getPlayers(tableId);
     }
 
@@ -63,9 +63,9 @@ export class PokerController {
     }
 
     @Get(':tableId/player/:playerName/hand')
-    async gethand(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<any> {
+    async getHand(@Param('tableId') tableId: string, @Param('playerName') playerName: string): Promise<any> {
         const result = this.pokerService.getHandForPlayerName(tableId, playerName);
-        Logger.log(`getHand result: ${JSON.stringify(result)}`);
+        Logger.log(`getHand result: ${result}`);
         return { result };
     }
 
